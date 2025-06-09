@@ -18,7 +18,7 @@ def extract_sentence_level_chunks(filepath: str):
         for i, paragraph in enumerate(paragraphs, 1):
             if paragraph.strip():
                 doc = nlp(paragraph)
-                sentences = doc.sents
+                sentences = list(doc.sents)
                 for j, sent in enumerate(sentences, 1):
                     metadataPage = {
                         'file_name': file_name,
