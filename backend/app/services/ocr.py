@@ -6,7 +6,7 @@ import numpy as np
 from typing import List, Dict
 from PIL import Image
 
-nlp = spacy.load("en_core_web_md")
+nlp = spacy.load("en_core_web_sm")
 
 def grayscale(image: np.ndarray) -> np.ndarray:
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -75,13 +75,25 @@ def deskew(cvImage):
     # print(angle)
     return rotateImage(cvImage, -1.0 * angle)
 
+def remove_borders(image):
+    contours, heirarchy = cv2.findContours(image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cntsSorted = sorted(contours, key=lambda x:cv2.contourArea(x))
+    cnt = cntsSorted[-1]
+    x, y, w, h = cv2.boundingRect(cnt)
+    crop = image[y:y+h, x:x+w]
+    return (crop)
+
 def preprocess_image(image: np.ndarray) -> np.ndarray:
     deskewed_img = deskew(image)
     gray_image = grayscale(deskewed_img)
     im_bw = binarization(gray_image)
     no_noise = noise_removal(im_bw)
+    no_borders = remove_borders(no_noise)
+    color = [255, 255, 255]
+    top, bottom, left, right = [150]*4
+    image_with_border = cv2.copyMakeBorder(no_borders, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
     
-    return no_noise
+    return image_with_border
 
 def ocr_image(image: np.ndarray) -> str:
     processed = preprocess_image(image)
