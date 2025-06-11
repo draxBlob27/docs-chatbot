@@ -5,11 +5,11 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update && apt-get install -y \
-    poppler-utils tesseract-ocr libgl1-mesa-glx ghostscript \
+    libgl1-mesa-glx \
  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-EXPOSE 8000
+EXPOSE 8501
 
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["streamlit", "run", "frontend/streamlit_app.py", "--server.port=8501", "--server.enableCORS=false"]
