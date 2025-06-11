@@ -16,4 +16,4 @@ app.include_router(upload.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Backend is running. Visit /docs to interact."}
+    return {"message": "Go to http://127.0.0.1:8000/docs"}
