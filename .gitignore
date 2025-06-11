@@ -1,3 +1,5 @@
 backend/data/chroma/
 makefile
 workflow.pdf
+.env
+.gitignore
