@@ -1,8 +1,8 @@
 import streamlit as st
-from frontend.components.uploader import uploader
-from frontend.components.query_box import query_box
-from frontend.components.document_table import document_table
-from frontend.components.theme_view import theme_view
+from components.uploader import uploader
+from components.query_box import query_box
+from components.document_table import document_table
+from components.theme_view import theme_view
 
 # Set Streamlit page configuration
 st.set_page_config(
