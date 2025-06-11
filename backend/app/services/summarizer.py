@@ -6,21 +6,17 @@ from dotenv import load_dotenv, find_dotenv
 import openai
 import instructor
 
-# Load .env variables
 dotenv_path = find_dotenv()
 load_dotenv(dotenv_path)
 
-# Patch OpenAI for structured output via instructor
 client = openai.OpenAI(
     base_url="https://api.groq.com/openai/v1",
     api_key=os.getenv("GROQ_API_KEY")
 )
 client = instructor.patch(client)
 
-# LLaMA 3 model on Groq
 MODEL = "llama-3.3-70b-versatile"
 
-# System prompt
 SYSTEM_PROMPT = """
 You are a research assistant.
 Given the following answers extracted from documents, identify key themes across the content.
@@ -34,7 +30,6 @@ Output must strictly follow the following JSON schema:
 Don't create hallucinated citations.
 """
 
-# Define response model
 class ThemeGroup(BaseModel):
     theme: str
     summary: str
