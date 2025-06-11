@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: docs-backend
+    env: docker
+    repo: https://github.com/draxBlob27/docs_chatbot
+    region: oregon
+    dockerContext: ./backend
+    plan: free
+    branch: main
+    healthCheckPath: /
+    buildFilter:
+      paths:
+        - backend/**
+        - requirements.txt
+
+  - type: web
+    name: docs-frontend
+    env: docker
+    repo: https://github.com/draxBlob27/docs_chatbot
+    region: oregon
+    dockerContext: ./frontend
+    plan: free
+    branch: main
+    buildFilter:
+      paths:
+        - frontend/**
+        - requirements.txt
+    envVars:
+      - key: API_URL
+        value: https://docs-backend.onrender.com
