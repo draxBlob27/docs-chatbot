@@ -1,28 +1,26 @@
 services:
-  - type: services
+  - type: service
     name: docs-backend
     env: docker
     repo: https://github.com/draxBlob27/docs_chatbot
     dockerfilePath: backend/Dockerfile
+    plan: free
     buildFilter:
       paths:
         - backend/**
     envVars:
       - key: GROQ_API_KEY
         sync: false
-      - key: PORT
-        value: 8000
 
-  - type: services
+  - type: service
     name: docs-frontend
     env: docker
     repo: https://github.com/draxBlob27/docs_chatbot
     dockerfilePath: frontend/Dockerfile
+    plan: free
     buildFilter:
       paths:
         - frontend/**
     envVars:
       - key: API_URL
-        value: https://docs-backend.onrender.com
-      - key: PORT
-        value: 8501
+        value: http://docs-backend:8000
