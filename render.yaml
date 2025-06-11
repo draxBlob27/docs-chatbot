@@ -9,7 +9,7 @@ services:
         - backend/**
     envVars:
       - key: GROQ_API_KEY
-        sync: false          
+        sync: false
       - key: PORT
         value: 8000
 
@@ -26,4 +26,3 @@ services:
         value: https://docs-backend.onrender.com
       - key: PORT
         value: 8501
-    startCommand: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
