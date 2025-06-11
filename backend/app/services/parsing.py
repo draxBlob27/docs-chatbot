@@ -49,7 +49,7 @@ def run_ocr_and_return_pdf(input_path: str) -> str:
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
 
     elif ext == ".pdf":
-        ocrmypdf.ocr(input_path, output_path, language="eng", force_ocr=True)
+        ocrmypdf.ocr(input_path, output_path, language="eng", force_ocr=True, invalidate_digital_signatures=True)
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
 
     else:

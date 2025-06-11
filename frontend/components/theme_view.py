@@ -17,7 +17,7 @@ def theme_view():
                 if response.status_code == 200:
                     themes = response.json()
                     for theme in themes:
-                        st.markdown(f"###{theme['theme']}")
+                        st.markdown(f"### {theme['theme']}")
                         st.markdown(f"{theme['summary']}")
                         with st.expander("Citations"):
                             for cite in theme["citations"]:
