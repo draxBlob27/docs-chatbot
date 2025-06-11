@@ -130,12 +130,10 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python3 parsing.py path/to/document          # Process document")
+        print("  python3 parsing.py path/to/document")
         sys.exit(1)
 
     try:
-
-        # Normal processing mode
         input_path = sys.argv[1]
         if not Path(input_path).exists():
             print(f"Error: File not found: {input_path}")
@@ -145,7 +143,6 @@ if __name__ == "__main__":
         chunks = preprocess_document(input_path)
         print(f"Extracted {len(chunks)} chunks")
         
-        # Print first few chunks as preview
         print("First few chunks preview:")
         for i, chunk in enumerate(chunks[:3]):
             print(f"\nChunk {i+1}:")

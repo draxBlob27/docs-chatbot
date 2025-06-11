@@ -1,14 +1,15 @@
 from fastapi import APIRouter, UploadFile, File
 from backend.app.services.parsing import preprocess_document
-from backend.app.services.embedding import embed_and_store
-from backend.app.services.search import search
+from backend.app.services.embedding import embed_file
+from backend.app.core.database import store_chunks
+from backend.app.models.schema import UploadResponse
 import os
 
 router = APIRouter()
 
 UPLOAD_DIR = "/Users/sanilparmar/Desktop/wasserStoff_chatbot/backend/data"
 
-@router.post("/upload/")
+@router.post("/upload/", response_model=UploadResponse)
 async def upload_and_process(file: UploadFile = File(...)):
     try:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
@@ -16,7 +17,8 @@ async def upload_and_process(file: UploadFile = File(...)):
             f.write(await file.read())
 
         chunks = preprocess_document(file_path)
-        embed_and_store(chunks)
+        embedded_chunks = embed_file(chunks)
+        store_chunks(chunks=chunks, embeddings=embedded_chunks)
 
         return {
             "filename": file.filename,
@@ -28,15 +30,4 @@ async def upload_and_process(file: UploadFile = File(...)):
         return {
             "error": str(e),
             "message": "An error occurred during upload or processing.",
-        }
-
-@router.get("/search/")
-async def search_docs(query: str, top_k: int = 5):
-    try:
-        results = search(query, top_k)
-        return {"results": results}
-    except Exception as e:
-        return {
-            "error": str(e),
-            "message": "An error occurred during search.",
         }

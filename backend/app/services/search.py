@@ -1,13 +1,11 @@
 
 from typing import List, Dict
 from sentence_transformers import SentenceTransformer
-import chromadb
 from backend.app.core.database import collection
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
+from backend.app.services.embedding import embed_query
 
 def search(query: str, top_k: int = 5) -> List[Dict]:
-    embedding = model.encode(query).tolist()
+    embedding = embed_query(query)
     results = collection.query(
         query_embeddings=[embedding], 
         n_results=top_k
