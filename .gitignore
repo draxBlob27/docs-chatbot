@@ -110,4 +110,4 @@ Pipfile.lock
 poetry.lock
 makefile
 workflow.pdf
-./backend/data
+./backend/data/
