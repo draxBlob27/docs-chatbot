@@ -25,8 +25,6 @@ services:
     buildFilter:
       paths:
         - frontend/**
-    dependsOn:
-      - backend
     envVars:
       - key: PORT
         value: 8501
