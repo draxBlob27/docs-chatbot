@@ -2,21 +2,19 @@ services:
   backend:
     build:
       context: ./backend
-    ports:
+    expose:
       - "8000:8000"
-    volumes:
-      - .:/app
     environment:
       - PYTHONUNBUFFERED=1
+      - PORT=8000
 
   frontend:
     build:
       context: ./frontend
-    ports:
+    expose:
       - "8501:8501"
-    volumes:
-      - .:/app
     depends_on:
       - backend
     environment:
       - API_URL=http://backend:8000
+      - PORT=8501

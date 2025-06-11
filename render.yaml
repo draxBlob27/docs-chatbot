@@ -12,6 +12,8 @@ services:
     envVars:
       - key: GROQ_API_KEY
         sync: false
+      - key: PORT
+        value: 8000
 
   - type: web
     name: frontend
@@ -23,6 +25,13 @@ services:
     buildFilter:
       paths:
         - frontend/**
+    dependsOn:
+      - backend
     envVars:
+      - key: PORT
+        value: 8501
       - key: BASE_URL
-        value: http://backend:8000
+        fromService:
+          type: web
+          name: backend
+          property: host
