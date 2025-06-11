@@ -1,35 +1,29 @@
 services:
   - type: web
-    name: backend
+    name: docs-backend
     env: docker
     repo: https://github.com/draxBlob27/docs_chatbot
-    dockerfilePath: backend.Dockerfile 
-    plan: free
-    region: oregon
+    dockerfilePath: backend/Dockerfile
     buildFilter:
-      paths: 
+      paths:
         - backend/**
     envVars:
       - key: GROQ_API_KEY
-        sync: false
+        sync: false          
       - key: PORT
         value: 8000
 
   - type: web
-    name: frontend
+    name: docs-frontend
     env: docker
     repo: https://github.com/draxBlob27/docs_chatbot
-    dockerfilePath: frontend.Dockerfile
-    plan: free
-    region: oregon
+    dockerfilePath: frontend/Dockerfile
     buildFilter:
       paths:
         - frontend/**
     envVars:
+      - key: API_URL
+        value: https://docs-backend.onrender.com
       - key: PORT
         value: 8501
-      - key: BASE_URL
-        fromService:
-          type: web
-          name: backend
-          property: host
+    startCommand: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
