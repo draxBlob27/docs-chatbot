@@ -2,19 +2,19 @@ services:
   backend:
     build:
       context: ./backend
-    expose:
+    ports:            # ✅ use ports instead
       - "8000:8000"
     env_file:
-      - .env                # ✅ load variables from .env
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
       - PORT=8000
-      - GROK_API_KEY      # ✅ allow override or passthrough
+      - GROQ_API_KEY
 
   frontend:
     build:
       context: ./frontend
-    expose:
+    ports:            # ✅ use ports instead
       - "8501:8501"
     depends_on:
       - backend
