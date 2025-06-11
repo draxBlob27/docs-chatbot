@@ -113,3 +113,5 @@ workflow.pdf
 data/vectordb/
 backend/data/vectordb/
 backend/data/
+*.pdf
+*.html
