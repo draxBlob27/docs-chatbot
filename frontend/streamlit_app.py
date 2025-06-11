@@ -4,17 +4,14 @@ from components.query_box import query_box
 from components.document_table import document_table
 from components.theme_view import theme_view
 
-# Set Streamlit page configuration
 st.set_page_config(
-    page_title="Document QA Bot",
+    page_title="Document QA",
     layout="wide"
 )
 
-# Sidebar Navigation
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Upload Documents", "Ask a Question", "Summarize Themes"])
 
-# Page Routing
 if page == "Upload Documents":
     st.title("Upload Your Documents")
     uploader()
