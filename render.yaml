@@ -4,6 +4,7 @@ services:
     env: docker
     repo: https://github.com/draxBlob27/docs_chatbot
     dockerfilePath: backend/Dockerfile
+    context: .
     plan: free
     region: oregon
     buildFilter:
