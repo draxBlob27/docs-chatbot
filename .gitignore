@@ -110,5 +110,6 @@ Pipfile.lock
 poetry.lock
 makefile
 workflow.pdf
-./backend/data/
-.backend/data/vectordb/
+data/vectordb/
+backend/data/vectordb/
+backend/data/
