@@ -2,14 +2,9 @@
 from typing import List, Dict
 from sentence_transformers import SentenceTransformer
 import chromadb
+from backend.app.core.database import collection
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-chroma_client = chromadb.PersistentClient(
-    path="/Users/sanilparmar/Desktop/wasserStoff_chatbot/backend/data/vectordb"
-)
-collection = chroma_client.get_or_create_collection(name="document_chunks")
-
 
 def search(query: str, top_k: int = 5) -> List[Dict]:
     embedding = model.encode(query).tolist()

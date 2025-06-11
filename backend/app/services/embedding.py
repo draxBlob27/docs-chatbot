@@ -1,16 +1,10 @@
 import uuid
 from typing import List, Dict
-
-
 import chromadb
 from sentence_transformers import SentenceTransformer
+from backend.app.core.database import collection
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
-
-chroma_client = chromadb.PersistentClient(path = "/Users/sanilparmar/Desktop/wasserStoff_chatbot/backend/data/vectordb")
-
-collection = chroma_client.get_or_create_collection(name="document_chunks")
-
 
 def embed_and_store(chunks: List[Dict]):
     for i, chunk in enumerate(chunks):
