@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
+import os
 
-API_URL = "http://localhost:8000/query/"
+BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 
 def query_box():
     st.header("Ask a Question")
@@ -13,7 +14,7 @@ def query_box():
     if query and st.button("Search"):
         with st.spinner("Searching..."):
             try:
-                response = requests.get(API_URL, params={"q": query, "top_k": top_k})
+                response = requests.get(f"{BASE_URL}/query/", params={"q": query, "top_k": top_k})
                 if response.status_code == 200:
                     results = response.json()
                 else:

@@ -10,8 +10,8 @@ def document_table(results: List[Dict]):
 
     table_data = []
     for res in results:
-        citation = res["Citations"]
-        text = res["Text"]
+        citation = res.get("citation", "N/A")
+        text = res.get("text", "N/A")
         file_name = citation.split("–")[0].strip() if "–" in citation else "Unknown"
         
         table_data.append({

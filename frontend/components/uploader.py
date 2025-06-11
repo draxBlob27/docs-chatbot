@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
+import os
 
-API_URL = "http://localhost:8000/upload/"
+BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 
 ALLOWED_TYPES = [
     "pdf", "txt", "md",       # documents
@@ -25,7 +26,7 @@ def uploader():
             files = {'file': (file.name, file.getvalue(), file.type)}
 
             try:
-                response = requests.post(API_URL, files=files)
+                response = requests.post(f"{BASE_URL}/upload/", files=files)
                 if response.status_code == 200:
                     result = response.json()
                     st.success(f"{file.name} uploaded. {result['chunks_stored']} chunks stored.")
