@@ -1,17 +1,42 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import APIRouter, UploadFile, File
+from backend.app.services.parsing import preprocess_document
+from backend.app.services.embedding import embed_and_store
+from backend.app.services.search import search
 import os
+
+router = APIRouter()
 
 UPLOAD_DIR = "/Users/sanilparmar/Desktop/wasserStoff_chatbot/backend/data"
 
-app = FastAPI()
+@router.post("/upload/")
+async def upload_and_process(file: UploadFile = File(...)):
+    try:
+        file_path = os.path.join(UPLOAD_DIR, file.filename)
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
 
-@app.get("/")
-async def root():
-    return {"message": "go to http://127.0.0.1:8000/docs!"}
+        chunks = preprocess_document(file_path)
+        embed_and_store(chunks)
 
-@app.post("/uploadFile/")
-async def upload_file(file: UploadFile = File()):
-    file_location = os.path.join(UPLOAD_DIR, file.filename)
-    with open (file_location, "wb") as f:
-        f.write(file.read())
-    print(f"filename: {file.filename}, content_type: {file.content_type}, Saved succesfully at: {file_location}")
+        return {
+            "filename": file.filename,
+            "chunks_stored": len(chunks),
+            "message": "File uploaded, parsed, and embedded successfully.",
+        }
+
+    except Exception as e:
+        return {
+            "error": str(e),
+            "message": "An error occurred during upload or processing.",
+        }
+
+@router.get("/search/")
+async def search_docs(query: str, top_k: int = 5):
+    try:
+        results = search(query, top_k)
+        return {"results": results}
+    except Exception as e:
+        return {
+            "error": str(e),
+            "message": "An error occurred during search.",
+        }
