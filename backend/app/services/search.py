@@ -1,8 +1,8 @@
 
 from typing import List, Dict
 from sentence_transformers import SentenceTransformer
-from backend.app.core.database import collection
-from backend.app.services.embedding import embed_query
+from app.core.database import collection
+from app.services.embedding import embed_query
 
 def search(query: str, top_k: int = 5) -> List[Dict]:
     embedding = embed_query(query)

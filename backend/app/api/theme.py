@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Query
 from typing import List, Dict
-from backend.app.models.schema import ThemeResult
-from backend.app.services.search import search
-from backend.app.services.citation import attach_citation_to_result
-from backend.app.services.summarizer import generate_themes
+from app.models.schema import ThemeResult
+from app.services.search import search
+from app.services.citation import attach_citation_to_result
+from app.services.summarizer import generate_themes
 
 router = APIRouter()
 

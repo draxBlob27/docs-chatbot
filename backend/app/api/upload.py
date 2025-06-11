@@ -1,8 +1,8 @@
 from fastapi import APIRouter, UploadFile, File
-from backend.app.services.parsing import preprocess_document
-from backend.app.services.embedding import embed_file
-from backend.app.core.database import store_chunks
-from backend.app.models.schema import UploadResponse
+from app.services.parsing import preprocess_document
+from app.services.embedding import embed_file
+from app.core.database import store_chunks
+from app.models.schema import UploadResponse
 import os
 
 router = APIRouter()

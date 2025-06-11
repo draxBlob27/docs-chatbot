@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.api import upload, query, theme
+from app.api import upload, query, theme
 
 app = FastAPI(
     title="Wasserstoff Document QA Backend",

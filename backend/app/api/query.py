@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query
-from backend.app.services.search import search
-from backend.app.services.citation import attach_citation_to_result
-from backend.app.models.schema import CitedAnswer
+from app.services.search import search
+from app.services.citation import attach_citation_to_result
+from app.models.schema import CitedAnswer
 from typing import List
 
 router = APIRouter()
