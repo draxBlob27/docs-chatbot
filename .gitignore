@@ -108,3 +108,6 @@ Pipfile.lock
 
 # Poetry
 poetry.lock
+makefile
+workflow.pdf
+./backend/data
