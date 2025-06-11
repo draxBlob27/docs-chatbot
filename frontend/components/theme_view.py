@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
+import os
 
-THEME_API = "http://localhost:8000/theme/"
+BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 
 def theme_view():
     st.header("Theme Summarizer")
@@ -12,7 +13,7 @@ def theme_view():
     if query and st.button("Summarize Themes"):
         with st.spinner("Generating themes..."):
             try:
-                response = requests.get(THEME_API, params={"q": query, "top_k": top_k})
+                response = requests.get(f"{BASE_URL}/theme/", params={"q": query, "top_k": top_k})
                 if response.status_code == 200:
                     themes = response.json()
                     for theme in themes:
