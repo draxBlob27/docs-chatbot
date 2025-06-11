@@ -111,3 +111,4 @@ poetry.lock
 makefile
 workflow.pdf
 ./backend/data/
+.backend/data/vectordb/
