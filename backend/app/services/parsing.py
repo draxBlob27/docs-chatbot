@@ -5,8 +5,25 @@ import pymupdf
 from typing import List, Dict
 from pathlib import Path
 from pymupdf4llm import LlamaMarkdownReader
+from PIL import Image
 
 nlp = spacy.load("en_core_web_sm")
+
+
+def is_pdf_text_based(pdf_path: str) -> bool:
+    try:
+        llama_reader = LlamaMarkdownReader()
+        docs = llama_reader.load_data(pdf_path)
+        total_chars = 0
+        pages_to_check = min(3, len(docs))
+        for i, page in enumerate(docs):
+            if i >= pages_to_check:
+                break
+            text = page.text.strip()
+            total_chars += len(text)
+        return total_chars > 100
+    except Exception:
+        return False
 
 
 def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
@@ -17,7 +34,6 @@ def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
                 rect = page.rect
                 new_page = new_doc.new_page(width=rect.width, height=rect.height)
                 text_dict = page.get_text("dict")
-                
                 for block in text_dict.get("blocks", []):
                     if block.get("type") == 0:
                         for line in block.get("lines", []):
@@ -26,7 +42,6 @@ def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
                                 if text:
                                     bbox = span["bbox"]
                                     font_size = span.get("size", 12)
-                                    
                                     new_page.insert_text(
                                         (bbox[0], bbox[1]),
                                         text,
@@ -34,24 +49,45 @@ def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
                                         fontsize=font_size,
                                         color=(0, 0, 0)
                                     )
-            
             new_doc.save(output_path)
     return output_path
+
+
+def preprocess_image(input_path: str) -> str:
+    try:
+        with Image.open(input_path) as img:
+            if img.mode in ('RGBA', 'LA'):
+                rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'RGBA':
+                    rgb_img.paste(img, mask=img.split()[-1])
+                else:
+                    rgb_img.paste(img.convert('RGB'))
+                processed_path = str(Path(input_path).with_name(Path(input_path).stem + "_processed.png"))
+                rgb_img.save(processed_path, 'PNG')
+                return processed_path
+            else:
+                return input_path
+    except Exception:
+        return input_path
 
 
 def run_ocr_and_return_pdf(input_path: str) -> str:
     ext = Path(input_path).suffix.lower()
     output_path = str(Path(input_path).with_name(Path(input_path).stem + "_ocr.pdf"))
-    fixed_output_path = str(Path(input_path).with_name(Path(input_path).stem + ".pdf"))
+    fixed_output_path = str(Path(input_path).with_name(Path(input_path).stem + "_fixed.pdf"))
 
     if ext in [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"]:
-        ocrmypdf.ocr(input_path, output_path, language="eng")
+        processed_input = preprocess_image(input_path)
+        ocrmypdf.ocr(
+            processed_input, 
+            output_path, 
+            language="eng",
+            image_dpi=300
+        )
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
-
     elif ext == ".pdf":
         ocrmypdf.ocr(input_path, output_path, language="eng", force_ocr=True, invalidate_digital_signatures=True)
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
-
     else:
         raise ValueError(f"Unsupported file: {ext}")
 
@@ -59,14 +95,11 @@ def run_ocr_and_return_pdf(input_path: str) -> str:
 def chunk_pdf(filepath: str) -> List[Dict]:
     llama_reader = LlamaMarkdownReader()
     docs = llama_reader.load_data(filepath)
-
     result = []
-
     for page in docs:
         compTxt = page.text
         page_number = page.metadata['page']
         file_name = page.metadata['file_path']
-
         paragraphs = compTxt.split("\n\n")
         for para_num, paragraph in enumerate(paragraphs, start=1):
             if paragraph.strip():
@@ -83,17 +116,14 @@ def chunk_pdf(filepath: str) -> List[Dict]:
                         "text": sent.text.strip(),
                         "metadata": metadataPage
                     })
-
     return result
 
 
 def chunk_txt(filepath: str) -> List[Dict]:
     with open(filepath, "r") as file:
         content = file.read()
-
     paragraphs = content.split("\n\n")
     result = []
-
     for para_num, paragraph in enumerate(paragraphs, 1):
         if paragraph.strip():
             doc = nlp(paragraph)
@@ -107,22 +137,29 @@ def chunk_txt(filepath: str) -> List[Dict]:
                         "sentence_number": sent_num,
                     }
                 })
-
     return result
 
 
 def preprocess_document(filepath: str) -> List[Dict]:
     ext = Path(filepath).suffix.lower()
-
     if ext in [".txt", ".md"]:
         return chunk_txt(filepath)
-
-    elif ext in [".pdf", ".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"]:
+    elif ext in [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"]:
         searchable_pdf = run_ocr_and_return_pdf(filepath)
         return chunk_pdf(searchable_pdf)
-
+    elif ext == ".pdf":
+        if is_pdf_text_based(filepath):
+            try:
+                return chunk_pdf(filepath)
+            except Exception:
+                searchable_pdf = run_ocr_and_return_pdf(filepath)
+                return chunk_pdf(searchable_pdf)
+        else:
+            searchable_pdf = run_ocr_and_return_pdf(filepath)
+            return chunk_pdf(searchable_pdf)
     else:
         raise ValueError(f"Unsupported file type: {ext}")
+
 
 if __name__ == "__main__":
     import sys
@@ -130,7 +167,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python3 parsing.py path/to/document")
+        print("  python3 parsing.py path")
         sys.exit(1)
 
     try:
@@ -142,12 +179,10 @@ if __name__ == "__main__":
         print(f"Processing document: {input_path}")
         chunks = preprocess_document(input_path)
         print(f"Extracted {len(chunks)} chunks")
-        
-        print("First few chunks preview:")
+        print("chunks preview:")
         for i, chunk in enumerate(chunks[:3]):
-            print(f"\nChunk {i+1}:")
+            print(f"\n{i+1}:")
             print(json.dumps(chunk, indent=2, ensure_ascii=False))
-                
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
