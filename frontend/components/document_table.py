@@ -1,5 +1,6 @@
 import streamlit as st
 from typing import List, Dict
+import os
 
 def document_table(results: List[Dict]):
     if not results:
@@ -12,12 +13,15 @@ def document_table(results: List[Dict]):
     for res in results:
         citation = res.get("citation", "N/A")
         text = res.get("text", "N/A")
-        file_name = citation.split("–")[0].strip() if "–" in citation else "Unknown"
+        parts = citation.split("–", 1)
+        full_path = parts[0].strip()
+        remaining_citation = parts[1].strip()
+        file_name = os.path.basename(full_path)
         
         table_data.append({
             "Document": file_name,
             "Answer": text,
-            "Citation": citation
+            "Citation": remaining_citation
         })
 
     st.table(table_data)

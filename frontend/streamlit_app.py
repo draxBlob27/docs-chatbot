@@ -10,17 +10,20 @@ st.set_page_config(
 )
 
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Upload Documents", "Ask a Question", "Summarize Themes"])
+page = st.sidebar.radio("Go to", ["Upload Documents", "Ask & Summarize"])
 
 if page == "Upload Documents":
-    st.title("Upload Your Documents")
     uploader()
 
-elif page == "Ask a Question":
-    st.title("Ask a Question")
-    results = query_box()
-    document_table(results)
+elif page == "Ask & Summarize":
+    st.title("Ask a Question & Summarize Themes")
+    query = st.text_input("Enter your question about the documents:")
+    top_k = st.slider("Number of results", min_value=1, max_value=30, value=5)
 
-elif page == "Summarize Themes":
-    st.title("Theme Summarization")
-    theme_view()
+    if query and st.button("Run Query and Theme Summary"):
+        results = query_box(query=query, top_k=top_k)
+        document_table(results)
+
+        st.divider()
+        st.subheader("Themes based on query")
+        theme_view(query=query, top_k=top_k)
