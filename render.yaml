@@ -1,30 +1,44 @@
 services:
+  # Backend API Service
   - type: web
-    name: docs-backend
-    env: docker
+    name: backend-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
-    repo: https://github.com/draxBlob27/docs_chatbot
-    dockerfilePath: backend/Dockerfile
-    buildFilter:
-      paths:
-        - backend/**
+    region: oregon
+    branch: main
+    env: python
+    buildCommand: ""  # Empty - Docker handles build via Dockerfile
+    startCommand: ""  # Empty - Docker uses CMD from Dockerfile
     envVars:
-      - key: GROQ_API_KEY
-        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
       - key: PORT
-        value: 8000
+        value: "8000"
+      - key: GROQ_API_KEY
+        sync: false  # This will need to be set manually in Render dashboard
+    healthCheckPath: /health  # Add a health check endpoint to your FastAPI app
 
+  # Frontend Streamlit Service  
   - type: web
-    name: docs-frontend
-    env: docker
+    name: frontend-app
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
     plan: free
-    repo: https://github.com/draxBlob27/docs_chatbot
-    dockerfilePath: frontend/Dockerfile
-    buildFilter:
-      paths:
-        - frontend/**
+    region: oregon
+    branch: main
+    env: python
+    buildCommand: ""  # Empty - Docker handles build via Dockerfile
+    startCommand: ""  # Empty - Docker uses CMD from Dockerfile
     envVars:
       - key: API_URL
-        value: https://docs-backend.onrender.com
+        fromService:
+          type: web
+          name: backend-api
+          property: host
       - key: PORT
-        value: 8501
+        value: "8501"
+    healthCheckPath: /  # Streamlit serves on root path
+
