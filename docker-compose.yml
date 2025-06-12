@@ -1,23 +1,25 @@
+version: "3.9"
+
 services:
   backend:
     build:
       context: ./backend
-    ports:        
-      - "8000:8000"
+    ports:
+      - "8000:8080"  
     env_file:
       - .env
     environment:
       - PYTHONUNBUFFERED=1
-      - PORT=8000
+      - PORT=8080          
       - GROQ_API_KEY
 
   frontend:
     build:
       context: ./frontend
-    ports:        
-      - "8501:8501"
+    ports:
+      - "8501:8080"  
     depends_on:
       - backend
     environment:
-      - API_URL=http://backend:8000
-      - PORT=8501
+      - API_URL=http://backend:8080  
+      - PORT=8080
