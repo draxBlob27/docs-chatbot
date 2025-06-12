@@ -1,7 +1,12 @@
+'''
+    Render table for output, as mentioned in project.
+'''
+
 import streamlit as st
 from typing import List, Dict
 import os
 
+# Renders query results in table.
 def document_table(results: List[Dict]):
     if not results:
         st.info("No results to display.")
@@ -16,7 +21,7 @@ def document_table(results: List[Dict]):
         parts = citation.split("–", 1)
         full_path = parts[0].strip()
         remaining_citation = parts[1].strip()
-        file_name = os.path.basename(full_path)
+        file_name = os.path.basename(full_path) #To get only filename, instad of whole path.
         
         table_data.append({
             "Document": file_name,

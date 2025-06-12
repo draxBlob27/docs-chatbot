@@ -1,14 +1,18 @@
+'''
+    Returns response formatted output based on schemas.py
+'''
+
 import os
-import json
 from typing import List, Dict
-from pydantic import BaseModel
 from dotenv import load_dotenv, find_dotenv
 import openai
-import instructor
+import instructor #To patch LLM client for response formatting.
+from app.models.schema import ThemeResult
 
-dotenv_path = find_dotenv()
+dotenv_path = find_dotenv() #finds path of .env file, can even find in upper level directory.
 load_dotenv(dotenv_path)
 
+#GROQ LLM allows openAI sdk.
 client = openai.OpenAI(
     base_url="https://api.groq.com/openai/v1",
     api_key=os.getenv("GROQ_API_KEY")
@@ -30,12 +34,7 @@ Output must strictly follow the following JSON schema:
 Don't create hallucinated citations.
 """
 
-class ThemeGroup(BaseModel):
-    theme: str
-    summary: str
-    citations: List[str]
-
-def generate_themes(answer_chunks: List[Dict]) -> List[ThemeGroup]:
+def generate_themes(answer_chunks: List[Dict]) -> List[ThemeResult]:
     text_blocks = []
     for item in answer_chunks:
         citation = item.get("citation", "Unknown")
@@ -47,14 +46,14 @@ def generate_themes(answer_chunks: List[Dict]) -> List[ThemeGroup]:
     try:
         response = client.chat.completions.create(
             model=MODEL,
-            response_model=List[ThemeGroup],
+            response_model=List[ThemeResult],
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": full_input}
             ],
-            temperature=0.3,
+            temperature=0.3, #Keeping temp low to not let LLM get creative.
             max_retries=2
         )
         return response
     except Exception as e:
-        return [ThemeGroup(theme="Error", summary=f"Failed to parse response: {str(e)}", citations=[])]
+        return [ThemeResult(theme="Error", summary=f"Failed to parse response: {str(e)}", citations=[])]

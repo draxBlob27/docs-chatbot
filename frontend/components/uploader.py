@@ -1,7 +1,14 @@
+'''
+    Creates a file upload component in frontend. Allows multiple file to be selected at 
+    once.
+    Uses a HTTP POST request to upload file based on upload api call.
+'''
+
 import streamlit as st
 import requests
 import os
 
+# If env var not uses localhost, used in cloud for connecting with backend
 BASE_URL = os.getenv("API_URL", "http://localhost:8000")
 
 ALLOWED_TYPES = [

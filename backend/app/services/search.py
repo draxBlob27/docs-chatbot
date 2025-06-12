@@ -1,6 +1,10 @@
+'''
+    Returns top_k matching list of dictionary of vector embedding, then extracting text, metadata, 
+    and relevancy score w.r.t query.
+'''
+
 
 from typing import List, Dict
-from sentence_transformers import SentenceTransformer
 from app.core.database import collection
 from app.services.embedding import embed_query
 

@@ -1,3 +1,8 @@
+'''
+Getting metadata and parsing it to return cited answers.
+Involves basic indexing.
+'''
+
 from typing import Dict
 
 def extract_citation(metadata: Dict) -> str:

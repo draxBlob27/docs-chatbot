@@ -1,15 +1,23 @@
+'''
+    Performs ocr based text extraction for scanned pdf and images, othrewise for text pdf
+    performs text extraction and return list of chunks with metadata based on sentences 
+    using spacy.
+'''
 import os
-import spacy
-import ocrmypdf
-import pymupdf
-from typing import List, Dict
+import spacy #Module for paragraph and sentence citation. Uses english models
+import ocrmypdf #On scanned pdfs add a layer of text to convert it to text pdf.
+import pymupdf #Here used for helping pymupdf4llm with ocrmypdf output
+from typing import List, Dict 
 from pathlib import Path
-from pymupdf4llm import LlamaMarkdownReader
+from pymupdf4llm import LlamaMarkdownReader 
 from PIL import Image
 
+# Natural language parser sm(small) core english model
 nlp = spacy.load("en_core_web_sm")
 
-
+'''
+    This functions checks if pdf is text searchable or scanned.
+'''
 def is_pdf_text_based(pdf_path: str) -> bool:
     try:
         llama_reader = LlamaMarkdownReader()
@@ -25,7 +33,12 @@ def is_pdf_text_based(pdf_path: str) -> bool:
     except Exception:
         return False
 
-
+'''
+    Fixes ocrmypdf output, which was incompatible with pymupdf4llm.
+    ocrmypdf output is compatible with pymupdf, this func creates
+    new pdf compatible with pymupdf4llm.
+    Incomptabilty occured due to glyphless font layer added by ocrmypdf.
+'''
 def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
     with pymupdf.open(input_path) as doc:
         with pymupdf.open() as new_doc:
@@ -52,7 +65,10 @@ def fix_glyphless_font_pdf(input_path: str, output_path: str) -> str:
             new_doc.save(output_path)
     return output_path
 
-
+'''
+    For images input with alpha(i.e. transparency), removes alpha and return new image which is
+    RGB.
+'''
 def preprocess_image(input_path: str) -> str:
     try:
         with Image.open(input_path) as img:
@@ -70,7 +86,9 @@ def preprocess_image(input_path: str) -> str:
     except Exception:
         return input_path
 
-
+'''
+    Parses scanned pdf and images, by ocrmypdf, which creates a new pdf with text layer.
+'''
 def run_ocr_and_return_pdf(input_path: str) -> str:
     ext = Path(input_path).suffix.lower()
     output_path = str(Path(input_path).with_name(Path(input_path).stem + "_ocr.pdf"))
@@ -82,10 +100,11 @@ def run_ocr_and_return_pdf(input_path: str) -> str:
             processed_input, 
             output_path, 
             language="eng",
-            image_dpi=300
+            image_dpi=300 #Most parsing softwares handles 300 dpi best. (600 -> Big size, 100 -> Low quality)
         )
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
     elif ext == ".pdf":
+        #For documents with digital signature ocrmypdf fails as it will invalidate siganture. 
         ocrmypdf.ocr(input_path, output_path, language="eng", force_ocr=True, invalidate_digital_signatures=True)
         return fix_glyphless_font_pdf(output_path, fixed_output_path)
     else:
@@ -103,7 +122,7 @@ def chunk_pdf(filepath: str) -> List[Dict]:
         paragraphs = compTxt.split("\n\n")
         for para_num, paragraph in enumerate(paragraphs, start=1):
             if paragraph.strip():
-                doc = nlp(paragraph)
+                doc = nlp(paragraph) #Based on logic of nlp model, separates sentences from paragraphs.
                 sentences = doc.sents
                 for sent_num, sent in enumerate(sentences, 1):
                     metadataPage = {
@@ -118,7 +137,7 @@ def chunk_pdf(filepath: str) -> List[Dict]:
                     })
     return result
 
-
+#If text file or markdown files directly runs pymupdf4llm to extract chunks.
 def chunk_txt(filepath: str) -> List[Dict]:
     with open(filepath, "r") as file:
         content = file.read()
@@ -144,7 +163,7 @@ def preprocess_document(filepath: str) -> List[Dict]:
     ext = Path(filepath).suffix.lower()
     if ext in [".txt", ".md"]:
         return chunk_txt(filepath)
-    elif ext in [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"]:
+    elif ext in [".jpg", ".jpeg", ".png", ".tiff", ".tif", ".bmp"]: #added extra exts for safety
         searchable_pdf = run_ocr_and_return_pdf(filepath)
         return chunk_pdf(searchable_pdf)
     elif ext == ".pdf":
@@ -160,7 +179,7 @@ def preprocess_document(filepath: str) -> List[Dict]:
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-
+# Testing, uses dunder method ensuring not triggerring when called outside this script.
 if __name__ == "__main__":
     import sys
     import json
@@ -180,9 +199,10 @@ if __name__ == "__main__":
         chunks = preprocess_document(input_path)
         print(f"Extracted {len(chunks)} chunks")
         print("chunks preview:")
+        #Initial 3 chunks to be displayed.
         for i, chunk in enumerate(chunks[:3]):
             print(f"\n{i+1}:")
-            print(json.dumps(chunk, indent=2, ensure_ascii=False))
+            print(json.dumps(chunk, indent=2))
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)

@@ -1,4 +1,9 @@
-from typing import Optional, Dict, List
+'''
+    Response modelling/formatting using pydantic to overcome pythons dynamic nature, 
+    used to uniformize and get expected answers.
+'''
+
+from typing import Optional, Dict, List #Optinal of x -> union of (x, None)
 from pydantic import BaseModel
 
 class UploadResponse(BaseModel):

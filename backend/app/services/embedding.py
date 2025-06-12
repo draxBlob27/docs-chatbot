@@ -1,3 +1,7 @@
+'''
+    Creates vector embedding of list of texts using hugging face embedding model
+'''
+
 from typing import List, Dict
 from sentence_transformers import SentenceTransformer
 

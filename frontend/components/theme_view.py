@@ -1,3 +1,8 @@
+'''
+    Renders theme based on GET reponse form theme api call, which uses LLM for theme 
+    identification
+'''
+
 import streamlit as st
 import requests
 import os

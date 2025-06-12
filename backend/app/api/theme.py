@@ -1,3 +1,7 @@
+'''
+    API route for getting theme from returned cited answers of query.Uses LLM to identify theme
+'''
+
 from fastapi import APIRouter, Query
 from typing import List, Dict
 from app.models.schema import ThemeResult
