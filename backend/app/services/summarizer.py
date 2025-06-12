@@ -24,7 +24,7 @@ Group related answers under the same theme and cite the source of each answer.
 
 Output must strictly follow the following JSON schema:
 - theme: one-line summary for the theme.
-- summary: a detailed explanation.
+- summary: a detailed explanation as elaborate as you can be in context of question and response.
 - citations: list of citation strings (e.g., 'doc.pdf – Page 2 – Para 4 – Sentence 1').
 
 Don't create hallucinated citations.
