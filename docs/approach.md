@@ -67,4 +67,18 @@ This document outlines the end-to-end architecture and implementation methodolog
   - Search and retrieval (`test_search.py`)
   - Theme generation (`test_theme.py`)
 
+---
+
+## Learning
+
+During the deployment phase, I initially attempted to host the application on **Render**. I completed all required configurations, including Docker setup and environment linking.
+
+However, the deployment failed due to one key limitation:
+- **Render couldn’t handle the large Docker image size**, especially due to OCR and LLM dependencies.
+
+In the process, I made a few **unnecessary commits**. Although I could have cleaned the commit history, I chose to **keep them as a reflection of my learning journey** — showcasing the iterative process and challenges faced.
+
+Eventually, I **successfully deployed** the full-stack app on **Google Cloud Platform (Cloud Run)**, which provided better support for containerized applications with larger images.
+
+
 
