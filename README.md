@@ -88,4 +88,4 @@ A full-stack AI-powered chatbot system that allows users to upload documents and
 1. **Clone the repo**
    ```bash
    git clone https://github.com/SanilParmar-wasserstoff-AiInternTask
-   cd wasserStoff_chatbot
+   cd SanilParmar-wasserstoff-AiInternTask
