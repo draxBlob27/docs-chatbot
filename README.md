@@ -2,6 +2,14 @@
 
 A full-stack AI-powered chatbot system that allows users to upload documents and ask natural language questions. The system extracts and cites answers from individual documents and synthesizes common themes across them.
 
+
+## Live Demo
+
+The project is deployed on **Google Cloud Platform** using Cloud Run:
+
+- **Frontend** (Streamlit): [https://frontend-image-853989606321.us-central1.run.app](https://frontend-image-853989606321.us-central1.run.app)  
+- **Backend** (FastAPI): [https://backend-image-853989606321.us-central1.run.app](https://backend-image-853989606321.us-central1.run.app)
+
 ## Features
 
 ### Document Handling
