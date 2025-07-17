@@ -95,5 +95,4 @@ The project is deployed on **Google Cloud Platform** using Cloud Run:
 
 1. **Clone the repo**
    ```bash
-   git clone https://github.com/SanilParmar-wasserstoff-AiInternTask
-   cd SanilParmar-wasserstoff-AiInternTask
+   git clone https://github.com/docs-chatbot
